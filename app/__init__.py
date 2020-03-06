@@ -2,6 +2,7 @@ from __future__ import print_function
 import sys
 
 import eventlet
+import json
 from flask import Flask
 from flask_mqtt import Mqtt
 from flask_socketio import SocketIO
@@ -33,7 +34,7 @@ def handle_subscribe(client, userdata, mid, granted_qos):
 def handle_mqtt_message(client, userdata, message):
     data = dict(
         topic=message.topic,
-        payload=message.payload.decode()
+        payload=json.loads(message.payload.decode())
     )
     socketio.emit('mqtt_message', data=data)
     print(data, file=sys.stderr)

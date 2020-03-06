@@ -19,34 +19,46 @@ let recordButton;
 // Called each time a new mqtt message is recieved
 // This checks the state of the recording variable
 let sessionRecorder = function(data) {
-    if ((recording == true) && data['payload']['success']) {
-        let tagId = data['payload']['tagId'];
+    if (!data['payload'][0]) return;
+
+    // We may need to do more checking to ensure these are
+    // properly formed messages
+    let payload = data['payload'][0];
+    if (recording && payload['success']) {
+        let tagId = payload['tagId'];
 
         if (movementSession.hasOwnProperty(tagId))
-            movementSession[tagId].push(data);
-        else movementSession[tagId] = [data];
+            movementSession[tagId].push(payload);
+        else movementSession[tagId] = [payload];
+        console.log(movementSession);
     }
 }
 
 // How to start/stop recording
 let startRecording = function() {recording = true;}
 let stopRecording = function() {
-    recording = false;
     addNewDownloadLink();
     movementSession = {};
+    recording = false;
 }
 
-// Append data to the screen
+// Append download links to the webpage
 let addNewDownloadLink = function() {
     let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(movementSession));
     let listElement = document.createElement("li");
     let downloadLink = document.createElement('a');
     downloadLink.setAttribute("href", dataStr);
-    downloadLink.setAttribute('download', 'session.json');
-    downloadLink.innerHTML = "New Session";
+    downloadLink.setAttribute('download', 'session' + Date.now() + '.json');
+
+    downloadLink.innerHTML = formatItemName();
 
     listElement.appendChild(downloadLink);
-    pastRecordings.appendChild(listElement);
+    pastRecordings.prepend(listElement);
+}
+
+let formatItemName = function() {
+    let now = new Date(Date.now()).toString('YYYY-MM-dd');
+    return ('Session: ' + now);
 }
 
 let handleRecordButtonClick = function() {
