@@ -1,0 +1,4 @@
+*.pyc
+.DS_STORE
+config.py
+venv
