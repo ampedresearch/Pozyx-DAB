@@ -7,7 +7,6 @@ This currently runs in Python 2.7.1 as the [initial test scripts from the Pozyx 
 $ sudo pip2 install virtualenv
 $ virtualenv -p /usr/bin/python2.7 venv
 $ source venv/bin/activate
-$ deactivate
 ```
 
 ## Packages
@@ -18,6 +17,7 @@ $ pip install -r requirements.txt
 
 If you install or change any python packages, make sure to run the following command to keep the requirements file updated.
 ```
+$ pip freeze > requirements.txt
 ```
 
 I (Willie) ran the following commands on initial setup (though you shouldn't have to).
