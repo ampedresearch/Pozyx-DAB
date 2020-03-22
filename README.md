@@ -31,7 +31,7 @@ $ pip install eventlet
 ```
 
 ## Run
-Because we are using an eventlet server rather than the default, you will not use the `flask run` command. Instead, you will simply run the core script.
+Because we are using an eventlet server rather than the default Werkzeug server, you will not use the `flask run` command. Instead, you will simply run the core script.
 ```
 $ python core.py
 ```
