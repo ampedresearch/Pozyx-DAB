@@ -10,6 +10,8 @@ from config import Config
 
 from fake_data.pozyx_tester import PozyxTester
 
+from flask_bootstrap import Bootstrap
+
 fakeDataMode = True
 
 eventlet.monkey_patch()  # Better production server apparently
@@ -19,6 +21,9 @@ app.config.from_object(Config)
 
 # Used for sending messages to our web app(s)
 socketio = SocketIO(app)
+
+# Used for styling
+bootstrap = Bootstrap(app)
 
 # Fake connection for testing
 if fakeDataMode:

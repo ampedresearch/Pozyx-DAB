@@ -1,17 +1,43 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
     <head>
-        <meta charset="utf-8">
-        <title>{{ title }}</title>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.js"></script>
-        <script src={{ url_for('send_static', path='retrieve_mqtt.js') }}></script>
-        <script src={{ url_for('send_static', path='particle.js') }}></script>
-        <script src={{ url_for('send_static', path='sketch.js') }}></script>
+        {% block head %}
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+            {% block styles %}
+                {{ bootstrap.load_css() }}
+            {% endblock %}
+            <title>{{ title }}</title>
+        {% endblock %}
     </head>
     <body>
-        <div>F+P: <a href="/index">Home</a></div>
-        <hr />
+        {% block navbar %}
+        {% set navigation_bar = [
+            ('/', 'index', 'Home'),
+            ('#', 'test', 'Test'),
+            ('#', 'test2', 'Test')
+        ] -%}
+        {% set active_page = active_page|default('index') -%}
+        <ul class="nav nav-tabs" id="navigation">
+            {% for href, id, caption in navigation_bar %}
+            <li class="nav-item">
+                {% if id == active_page %}
+                    <a class="nav-link active" href="{{ href|e }}">{{ caption|e }}</a>
+                {% else %}
+                    <a class="nav-link" href="{{ href|e }}">{{ caption|e }}</a>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endblock %}
+
         {% block content %}{% endblock %}
+
+        <!-- Not implemented yet -->
+        {% block footer %}{% endblock %}
+
+        {% block scripts %}
+            {{ bootstrap.load_js() }}
+        {% endblock %}
     </body>
 </html>
