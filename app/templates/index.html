@@ -2,10 +2,49 @@
 {% set active_page = "index" %}
 
 {% block content %}
-<div><button id="recordButton" type="button">Start Recording</button></div>
-<div>
-    <ul id="pastRecordings">
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-sm-3">
+			<h3>Options</h3>
+
+			<div class="form-check">
+				<!-- checkboxes -->
+				<div class="checkbox">
+					<label><input type="checkbox" class="form-check-input" name="recorded" checked>Live Capture</label>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" class="form-check-input" name="simulated" checked>Simulated Motion</label>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" class="form-check-input" name="simulated">Recorded Motion</label>
+				</div>
+			</div>
+
+		    <!-- simulated dancer options -->
+
+			<label>Circle radius</label><input type="range" class="slider" id="radius-slider" value=100 max=250 min=50 onInput="updateRadiusVal()">
+			<label>Speed</label><input type="range" class="slider" id="speed-slider" value=50 max=250 min=10 onInput="updateSpeedVal()">
+			<label>Trace length</label><input type="range" class="slider" id="trace-slider" value=50 max=250 min=0 onInput="updateTraceVal()">
+
+
+			<button id="recordButton" type="button">Start Recording</button>
+		    <ul id="pastRecordings"></ul>
+		</div>
+
+
+		<div class="col-sm-9" id="canvas-div" style="  height: 600px; padding: 0px;"></div>
+	</div>
 </div>
+<div class="container" style="margin-top:50px;">
+		<!-- About This Project -->
+	<div align="center">
+		<h2>About This Project</h2>
+	</div>
+
+</div>
+
+
 {% endblock %}
 
 {% block scripts %}
@@ -13,5 +52,6 @@
 <script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.js"></script>
 <script src={{ url_for('send_static', path='retrieve_mqtt.js') }}></script>
 <script src={{ url_for('send_static', path='particle.js') }}></script>
+<script src={{ url_for('send_static', path='dancer.js') }}></script>
 <script src={{ url_for('send_static', path='sketch.js') }}></script>
 {% endblock %}
