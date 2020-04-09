@@ -11,13 +11,13 @@
 			<div class="form-check">
 				<!-- checkboxes -->
 				<div class="checkbox">
-					<label><input type="checkbox" class="form-check-input" name="recorded" checked>Live Capture</label>
+					<label><input type="checkbox" class="form-check-input" id="live" name="live" onclick="checkboxFunction(this)" checked>Live Capture</label>
 				</div>
 				<div class="checkbox">
-					<label><input type="checkbox" class="form-check-input" name="simulated" checked>Simulated Motion</label>
+					<label><input type="checkbox" class="form-check-input" id="simulated" name="simulated" onclick="checkboxFunction(this)" checked>Simulated Motion</label>
 				</div>
 				<div class="checkbox">
-					<label><input type="checkbox" class="form-check-input" name="simulated">Recorded Motion</label>
+					<label><input type="checkbox" class="form-check-input" id="recorded" name="recorded" onclick="checkboxFunction(this)">Recorded Motion</label>
 				</div>
 			</div>
 
@@ -36,9 +36,9 @@
 		<div class="col-sm-9" id="canvas-div" style="  height: 600px; padding: 0px;"></div>
 	</div>
 </div>
-<div class="container" style="margin-top:50px;">
+<div class="container">
 		<!-- About This Project -->
-	<div align="center">
+	<div class="about" align="center">
 		<h2>About This Project</h2>
 	</div>
 
