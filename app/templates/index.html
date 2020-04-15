@@ -23,9 +23,24 @@
 
 		    <!-- simulated dancer options -->
 
-			<label>Circle radius</label><input type="range" class="slider" id="radius-slider" value=100 max=250 min=50 onInput="updateRadiusVal()">
+			<label>Circle radius</label><input type="range" class="slider" id="radius-slider" value=25 max=50 min=1 onInput="updateRadiusVal()">
 			<label>Speed</label><input type="range" class="slider" id="speed-slider" value=50 max=250 min=10 onInput="updateSpeedVal()">
 			<label>Trace length</label><input type="range" class="slider" id="trace-slider" value=50 max=250 min=0 onInput="updateTraceVal()">
+
+			<div class="pathways">
+				<label>Pathway Type:</label>
+				<button id="linearPath" type="button">Linear</button>
+				<button id="circularPath" type="button">Circular</button>
+				<button id="randomPath" type="button">Random</button>
+			</div>
+
+			<div class="facings">
+				<label>Facing:</label>
+				<button id="forwardFace" type="button">forward</button>
+				<button id="rightFace" type="button">right</button>
+				<button id="leftFace" type="button">left</button>
+				<button id="backFace" type="button">backward</button>
+			</div>
 
 
 			<button id="recordButton" type="button">Start Recording</button>

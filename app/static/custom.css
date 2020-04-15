@@ -1,7 +1,3 @@
-.nav {
-  margin-bottom: 50px; 
-}
-
 .input-content {
   /*margin: 20px;*/
 }
@@ -10,6 +6,11 @@
 
 .slider{
   width:100%;
+}
+
+label{
+  width: 100%;
+  margin
 }
 
 input[type=checkbox] {
@@ -58,6 +59,17 @@ button {
   color: white;
 }
 
+.pathways button {
+  background-color: #e32289;
+  color: white;
+}
+
+.facings button{
+  background-color: #21bede; 
+  color: white;
+}
+
 .about {
   margin-top: 50px;
 }
+
