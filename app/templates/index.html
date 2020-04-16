@@ -5,50 +5,56 @@
 <div class="container-fluid">
 
 	<div class="row">
-		<div class="col-sm-3">
-			<h3>Options</h3>
+		<div class="col-sm-3" id="options">
 
-			<div class="form-check">
-				<!-- checkboxes -->
-				<div class="checkbox">
-					<label><input type="checkbox" class="form-check-input" id="live" name="live" onclick="checkboxFunction(this)" checked>Live Capture</label>
+			<button id="addDancer" onclick="addDancer()">Add Dancer</button>
+
+
+		<div id="dancers">
+
+
+			<div class="dancer" id="dancer1">
+				<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#dancer1collapse" aria-expanded="false" aria-controls="dancer1collapse">
+				    Dancer 1 Options
+				</button>
+
+		   		<div class="collapse" id="dancer1collapse">
+			    <div class="sliders">
+					<label>Radius</label><input type="range" class="slider" id="radius-slider" value=25 max=50 min=10 onInput="setRadius()"><label class="value" id="radius-label">25</label>
+
+					<label>Speed</label><input type="range" class="slider" id="speed-slider" value=25 max=50 min=1 onInput="setSpeed()"><label class="value" id="speed-label">25</label>
+
+					<label>Trace length</label><input type="range" class="slider" id="trace-slider" value=50 max=100 min=0 onInput="setTrace()"><label class="value" id="trace-label">50</label>
 				</div>
-				<div class="checkbox">
-					<label><input type="checkbox" class="form-check-input" id="simulated" name="simulated" onclick="checkboxFunction(this)" checked>Simulated Motion</label>
+
+				<div class="pathways">
+					<label>Pathway Type:</label>
+					<button id="LINEAR" type="button" onClick="setPathway(this.id)">Linear</button>
+					<button id="CIRCULAR" type="button" onClick="setPathway(this.id)">Circular</button>
+					<button id="RANDOM" type="button" onClick="setPathway(this.id)">Random</button>
 				</div>
-				<div class="checkbox">
-					<label><input type="checkbox" class="form-check-input" id="recorded" name="recorded" onclick="checkboxFunction(this)">Recorded Motion</label>
+
+				<div class="facings">
+					<label>Facing:</label>
+					<button id="FORWARD" type="button" onClick="setFacing(this.id)">Forward</button>
+					<button id="LEFT" type="button" onClick="setFacing(this.id)">Left</button>
+					<button id="RIGHT" type="button" onClick="setFacing(this.id)">Right</button>
+					<button id="BACKWARD" type="button" onClick="setFacing(this.id)">Backward</button>
+				</div>
+				<button class="removeDancer">Remove Dancer</button>
 				</div>
 			</div>
 
-		    <!-- simulated dancer options -->
 
-			<label>Circle radius</label><input type="range" class="slider" id="radius-slider" value=25 max=50 min=1 onInput="updateRadiusVal()">
-			<label>Speed</label><input type="range" class="slider" id="speed-slider" value=50 max=250 min=10 onInput="updateSpeedVal()">
-			<label>Trace length</label><input type="range" class="slider" id="trace-slider" value=50 max=250 min=0 onInput="updateTraceVal()">
+		</div> <!-- end dancers -->
 
-			<div class="pathways">
-				<label>Pathway Type:</label>
-				<button id="linearPath" type="button">Linear</button>
-				<button id="circularPath" type="button">Circular</button>
-				<button id="randomPath" type="button">Random</button>
-			</div>
+		<button id="recordButton" type="button">Start Recording!</button>
+	    <ul id="pastRecordings"></ul>
 
-			<div class="facings">
-				<label>Facing:</label>
-				<button id="forwardFace" type="button">forward</button>
-				<button id="rightFace" type="button">right</button>
-				<button id="leftFace" type="button">left</button>
-				<button id="backFace" type="button">backward</button>
-			</div>
-
-
-			<button id="recordButton" type="button">Start Recording</button>
-		    <ul id="pastRecordings"></ul>
-		</div>
-
+		</div> <!-- end column -->
 
 		<div class="col-sm-9" id="canvas-div" style="  height: 600px; padding: 0px;"></div>
+
 	</div>
 </div>
 <div class="container">
@@ -65,6 +71,9 @@
 {% block scripts %}
 <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <script src={{ url_for('send_static', path='retrieve_mqtt.js') }}></script>
 <script src={{ url_for('send_static', path='particle.js') }}></script>
 <script src={{ url_for('send_static', path='dancer.js') }}></script>

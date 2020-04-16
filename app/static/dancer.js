@@ -4,20 +4,20 @@ class Dot{
 		this.history = [];
 		this.historySize = 80;
 		this.size = 10;
-		this.facing = undefined;
+		this.arrow;
 
 		this.arrowLength = 20;
 	}
 
 	update(object){
 		this.updatePosition(object.pos);
-		this.updateFacing(object.facing);
+		this.updateArrow(object.facing);
 		this.draw();
 	}
 
 	updatePosition(pos){
-		// limit by history size
-		// should i just pass history from Dancer class?
+		// wrong code for trace
+		// should i just pass history from 
 		if(this.history.length >= this.historySize) this.history.pop();
 		this.history.unshift(pos);
 		// set current pos
@@ -25,9 +25,13 @@ class Dot{
 		this.pos.y = pos.y;
 	}
 
-	updateFacing(facing){
-		// new facing
-		this.facing = facing; //may need to copy vector
+	updateArrow(arrow){
+		this.arrow = arrow;
+	}
+
+	updateTrace(trace){
+		// not working properly
+		this.historySize = trace;
 	}
 
 	drawTrace(){
@@ -39,17 +43,16 @@ class Dot{
 		}
 	}
 
-	drawFacing(){
+	drawArrow(){
 		strokeWeight(5);
 		stroke(0);
-		line(this.pos.x, this.pos.y, this.pos.x + this.facing.x*this.arrowLength, this.pos.y + this.facing.y*this.arrowLength);
+		line(this.pos.x, this.pos.y, this.pos.x + this.arrow.x*this.arrowLength, this.pos.y + this.arrow.y*this.arrowLength);
 	}
 
 	draw(){
-		// draw
-		// scaling to canvas?
+		// scaling to canvas? with push/pop
 		this.drawTrace();
-		this.drawFacing();
+		this.drawArrow();
 
 		fill(255);
 		ellipse(this.pos.x, this.pos.y, this.size, this.size);
@@ -59,7 +62,7 @@ class Dot{
 
 class Dancer{
 	constructor(){
-		this.pos = createVector(50,50);
+		this.pos = createVector(50,50); //might remove this?
 		this.history = [this.pos.copy()];
 		this.historySize = 10;
 
@@ -67,9 +70,10 @@ class Dancer{
 		this.speed = 1;
 
 		this.radius = 50; //holder value
-		this.center = 50; //midway of 100-scale
+		this.center = createVector(50,50); //midway of 100-scale
 
-		this.pathway;
+		this.pathway; //both edited through html buttons
+		this.facing;
 
 		this.dot = new Dot({x: this.pos.x, y: this.pos.y});
 	}
@@ -80,10 +84,10 @@ class Dancer{
 		let newPos;
 		switch(this.pathway){
 			case 'CIRCULAR':
-				newPos = this.updateCircular(this.pos);
+				newPos = this.updateCircular();
 				break;
 			case 'LINEAR':
-				newPos = this.updateLinear(this.pos);
+				newPos = this.updateLinear();
 				break;
 			default:
 				newPos = createVector(50,50);
@@ -98,7 +102,7 @@ class Dancer{
 
 	updateCircular(){
 		// calculate NEXT position based current angle
-		let newPos = createVector(this.center + this.radius * cos(this.angle), this.center + this.radius * sin(this.angle)); 
+		let newPos = createVector(this.center.x + this.radius * cos(this.angle), this.center.y + this.radius * sin(this.angle)); 
 		this.angle += this.speed/this.radius; //should i edit this.angle in updateAngle()?
 
 		return newPos;
@@ -107,17 +111,12 @@ class Dancer{
 	updateLinear(){
 		// the position will be of X% of line length using cos of angle
 		let newPos = createVector(0,50);
-		this.angle += this.speed/this.radius;
+		let lineStart = createVector(this.center.x - this.radius, 50);
+		let lineEnd = createVector(this.center.x + this.radius, 50);
 
-		let lineStart = createVector(this.center-this.radius, 50);
-		let lineEnd = createVector(this.center+this.radius, 50);
-
-		//OPTION ONE
 		// use the cos of angle to map the position from -radius to radius from center
+		this.angle += this.speed/this.radius;
 		newPos.x = map(cos(this.angle), -1, 1, lineStart.x, lineEnd.x);
-
-		//OPTION TWO
-		//use the +/- of the cos(angle) to calculate mvmt 
 		
 		return newPos;
 	}
@@ -125,10 +124,24 @@ class Dancer{
 	updateFacing(){
 		// calculate facing from difference in position
 		let newFacing;
-		newFacing = createVector(this.history[0].x-this.history[1].x, this.history[0].y-this.history[1].y);
-		// switch(this.facing)
-		newFacing.normalize();
-
+		let normalized;
+		normalized = createVector(this.history[0].x-this.history[1].x, this.history[0].y-this.history[1].y).normalize();
+		switch(this.facing){
+			case 'FORWARD':
+				newFacing = normalized.copy();
+				break;
+			case 'LEFT':
+				newFacing = createVector(normalized.y, - normalized.x);
+				break;
+			case 'RIGHT':
+				newFacing = createVector(-normalized.y, normalized.x);
+				break;
+			case 'BACKWARD':
+				newFacing = normalized.mult(-1);
+				break;
+			default:
+				newFacing = normalized.copy();
+		}
 		return newFacing;
 	}
 
@@ -138,7 +151,54 @@ class Dancer{
 		this.history.unshift(pos);
 	}
 
+	updateCenter(x,y){
+		this.center = createVector(parseInt(x),parseInt(y));
+		console.log(this.center);
+	}
+
+	updateScale(w,h){
+		this.dot.updateScale(w,h);
+	}
+
 	setPathway(pathway){
 		this.pathway = pathway;
+	}
+
+	setFacing(facing){
+		this.facing = facing;
+	}
+
+	setRadius(radius){
+		this.radius = parseInt(radius);
+	}
+
+	setSpeed(speed){
+		this.speed = parseInt(speed);
+	}
+
+	setTrace(trace){
+		this.dot.updateTrace(parseInt(trace));
+	}
+}
+
+class LiveDancer extends Dancer(){
+	respondtoData(payload){
+		let newID = payload.tagId;
+		let position = this.convertData(payload);
+		// NOT HANDLING IDS HERE
+		// if newID = this.id?? or do code similar
+		// to willies' Particles() for all live dancers
+		this.addPosition(position);
+	}
+	convertData(payload) {
+	    let position = {};
+	    let origX = payload.data.coordinates.x;
+	    let origZ = payload.data.coordinates.y;
+	    let roomWidth = 10000;
+	    let roomHeight = 10000;
+	    position.x = map(origX, 0, roomWidth, 0, width, true);
+	    position.y = map(origZ, 0, roomHeight, 0, height, true);
+
+	    return position;
 	}
 }
