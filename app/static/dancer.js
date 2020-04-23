@@ -3,10 +3,13 @@ class Dot{
 		this.pos = createVector(object.x, object.y);
 		this.history = [];
 		this.historySize = 80;
-		this.size = 10;
-		this.arrow;
+		this.size = 15;
+		this.fill = object.fill;
 
+		this.arrow;
 		this.arrowLength = 20;
+
+		this.scale = 300;
 	}
 
 	update(object){
@@ -16,13 +19,15 @@ class Dot{
 	}
 
 	updatePosition(pos){
-		// wrong code for trace
-		// should i just pass history from 
+		// scale to scale value .. can make function to update with resize
+		let scaleX = map(pos.x, 0, 100, 0, this.scale);
+		let scaleY = map(pos.y, 0, 100, 0, this.scale);
+		let scalePos = createVector(scaleX,scaleY);
 		if(this.history.length >= this.historySize) this.history.pop();
-		this.history.unshift(pos);
+		this.history.unshift(scalePos);
 		// set current pos
-		this.pos.x = pos.x;
-		this.pos.y = pos.y;
+		this.pos.x = scalePos.x;
+		this.pos.y = scalePos.y;
 	}
 
 	updateArrow(arrow){
@@ -51,19 +56,23 @@ class Dot{
 
 	draw(){
 		// scaling to canvas? with push/pop
+		push();
+		translate(width/2-this.scale/2,height/2-this.scale/2);
 		this.drawTrace();
 		this.drawArrow();
 
-		fill(255);
+		fill(this.fill);
+		strokeWeight(0);
 		ellipse(this.pos.x, this.pos.y, this.size, this.size);
+		pop();
 	}
 }
 
 
-class Dancer{
-	constructor(){
-		this.pos = createVector(50,50); //might remove this?
-		this.history = [this.pos.copy()];
+class SimDancer{
+	constructor(pos, idNum){
+		this.pos = createVector(pos.x, pos.y); //might remove this?
+		this.history = [this.pos.copy()]; //do we need history for Dancer?
 		this.historySize = 10;
 
 		this.angle = 0;
@@ -74,8 +83,10 @@ class Dancer{
 
 		this.pathway; //both edited through html buttons
 		this.facing;
+		this.faceTarget = createVector(0,0);
 
-		this.dot = new Dot({x: this.pos.x, y: this.pos.y});
+		this.id = idNum;
+		this.dot = new Dot({x: this.pos.x, y: this.pos.y, fill: color(random(255),random(255),random(255))});
 	}
 
 	update(){
@@ -139,6 +150,9 @@ class Dancer{
 			case 'BACKWARD':
 				newFacing = normalized.mult(-1);
 				break;
+			case 'TARGET':
+				newFacing = this.calcTarget();
+				break;
 			default:
 				newFacing = normalized.copy();
 		}
@@ -173,7 +187,7 @@ class Dancer{
 	}
 
 	setSpeed(speed){
-		this.speed = parseInt(speed);
+		this.speed = map(parseInt(speed), 1, 50, 0.2 ,7);
 	}
 
 	setTrace(trace){
@@ -181,24 +195,93 @@ class Dancer{
 	}
 }
 
-class LiveDancer extends Dancer(){
-	respondtoData(payload){
+// seperate class
+// look @ particleS
+
+class LiveDancer{
+	constructor(id, initpos){
+		this.id = id;
+
+		this.history = [initpos];
+		this.historySize = 8; //does this need to change?
+
+		this.pos = createVector(this.history[0].x,this.history[0].y);
+
+		this.lerpFactor = 0.1;
+
+		this.dot = new Dot({x: this.pos.x, y: this.pos.y, fill: color(0)});
+	}
+
+	update(){
+		// return update position and push to dot class
+		let newPos = this.updatePosition();
+		let newFace = createVector(0,0); //supposedly can get from pozyx data?
+		this.dot.update({pos: newPos, facing: newFace});
+
+		this.pos = newPos; 
+	}
+
+	updatePosition(){
+		let newPos = createVector(0,0);
+		newPos.x = lerp(this.pos.x, this.history[0].x, this.lerpFactor);
+		newPos.y = lerp(this.pos.y, this.history[0].y, this.lerpFactor);
+
+		return newPos;
+	}
+
+	addPosition(pos){
+		 if (this.history.length >= this.historySize) this.popPosition();
+        this.history.unshift(pos);
+	}
+
+	popPosition(){
+		this.history.pop();
+	}
+
+}
+
+class LiveDancers{
+	constructor(){
+		this.dancerObj = {};
+		this.roomSize = createVector(10000,10000);
+	}
+
+	update(){
+		for(const k in this.dancerObj) {
+			this.dancerObj[k].update();
+		}
+	}
+
+	respondToData(payload){
 		let newID = payload.tagId;
 		let position = this.convertData(payload);
-		// NOT HANDLING IDS HERE
-		// if newID = this.id?? or do code similar
-		// to willies' Particles() for all live dancers
-		this.addPosition(position);
-	}
-	convertData(payload) {
-	    let position = {};
-	    let origX = payload.data.coordinates.x;
-	    let origZ = payload.data.coordinates.y;
-	    let roomWidth = 10000;
-	    let roomHeight = 10000;
-	    position.x = map(origX, 0, roomWidth, 0, width, true);
-	    position.y = map(origZ, 0, roomHeight, 0, height, true);
 
-	    return position;
+		if (newID in this.dancerObj) this.addPosition(newID, position);
+		else this.addDancer(newID, position);
+	}
+
+	addDancer(id,initpos){
+		this.dancerObj[id] = new LiveDancer(id, initpos);
+	}
+
+	addPosition(id, pos){
+		this.dancerObj[id].addPosition(pos);
+	}
+
+	convertData(payload){
+		let pos = createVector(0,0);
+		let origX = payload.data.coordinates.x;
+        let origZ = payload.data.coordinates.y;
+        // scaled to 100-points like simDancer
+        pos.x = map(origX, 0, this.roomSize.x, 0, 100, true);
+        pos.y = map(origZ, 0, this.roomSize.y, 0, 100, true);
+
+        return pos;
+	}
+
+	popPositions(){
+		for ( const k in this.dancerObj){
+			this.dancerObj[k].popPosition();
+		}
 	}
 }

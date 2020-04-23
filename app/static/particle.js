@@ -67,7 +67,7 @@ function Particles() {
         let newID = payload.tagId;
         let position = self.convertData(payload);
 
-        if (newID in self.particleObj) self.addPosition(newID, position);
+        if (newID in this.particleObj) self.addPosition(newID, position);
         else self.addParticle(newID, position);
     }
 

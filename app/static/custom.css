@@ -1,0 +1,84 @@
+input[type=checkbox] {
+    padding-left:5px;
+    padding-right:5px;
+    border-radius:15px;
+
+    -webkit-appearance:button;
+
+    border: double 2px #00F;
+
+    background-color:#0b0095;
+    color:#FFF;
+    white-space: nowrap;
+    overflow:hidden;
+
+    width:15px;
+    height:15px;
+}
+
+.slider {
+  -webkit-appearance: none;
+  background: #ffa321;
+  height: 15px;
+  border-radius: 5px;
+  width:80%;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+  width: 25px;
+  height: 25px;
+  background: grey;
+  border-radius: 50%; 
+  cursor: pointer;
+}
+
+label{
+  width: 100%;
+}
+
+.value{
+  padding-left: 10px;
+  width: 20%;
+}
+
+button {
+  padding: 5px;
+  border-radius: 10px;
+  border: none;
+  margin: 10px 0px 10px 0px;
+}
+
+#recordButton{
+/*  background-color: #5834eb;
+  color: white;*/
+}
+
+#addDancer {
+  background-color: #f77816;
+  color: white;
+}
+
+.removeDancer{
+  background-color: #e03607;
+  color: white;
+}
+
+.pathways button {
+  background-color: #e32289;
+  color: white;
+}
+
+.facings button{
+  background-color: #21bede; 
+  color: white;
+}
+
+.target-select {
+  width: 50%;
+}
+
+.about {
+  margin-top: 50px;
+}
+
