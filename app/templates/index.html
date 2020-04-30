@@ -11,11 +11,11 @@
 				<input type="checkbox" class="custom-control-input custom-switch" id="live-switch"><label class="custom-control-label" for="live-switch">Toggle Live Dancer(s)</label>
 			</div>
 
-			<button id="addDancer" onclick="addDancer()">Add Dancer</button>
+			<button id="playAll" onclick="pauseDancers(false)">play all</button>
+			<button id="pauseAll" onclick="pauseDancers(true)">pause all</button>
+			<button type="button" class="btn btn-block" id="addDancer" onclick="addDancer()">Add Dancer</button>
 
 		<div id="dancers-container" class="accordion">
-
-
 
 		</div> <!-- end dancers -->
 

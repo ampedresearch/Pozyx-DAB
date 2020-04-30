@@ -15,7 +15,7 @@ class Dot{
 	update(object){
 		this.updatePosition(object.pos);
 		this.updateArrow(object.facing);
-		this.draw();
+		// this.draw(); //seperate draw from update *******
 	}
 
 	updatePosition(pos){
@@ -83,15 +83,20 @@ class SimDancer{
 
 		this.pathway; //both edited through html buttons
 		this.facing;
-		this.faceTarget = createVector(0,0);
+		this.facingTarget = 'SELF';
+		this.centerTarget = 'STAGE'; //NOT implemented yet
+
+		this.facingTargetId;
+		this.centerTargetId;
+		this.targetPos = createVector(0,1);
 
 		this.id = idNum;
+		this.stopped = false;
 		this.dot = new Dot({x: this.pos.x, y: this.pos.y, fill: color(random(255),random(255),random(255))});
 	}
 
 	update(){
 		// update position and push to dot class
-		// maybe move this to updateposition function?
 		let newPos;
 		switch(this.pathway){
 			case 'CIRCULAR':
@@ -109,6 +114,10 @@ class SimDancer{
 		let newFace = this.updateFacing();
 		// push data to inner class
 		this.dot.update({pos: newPos, facing: newFace});
+	}
+
+	draw(){
+		this.dot.draw();
 	}
 
 	updateCircular(){
@@ -136,7 +145,9 @@ class SimDancer{
 		// calculate facing from difference in position
 		let newFacing;
 		let normalized;
-		normalized = createVector(this.history[0].x-this.history[1].x, this.history[0].y-this.history[1].y).normalize();
+		// normalized will change based on target
+		normalized = this.getNormalized(this.facingTarget);
+
 		switch(this.facing){
 			case 'FORWARD':
 				newFacing = normalized.copy();
@@ -150,13 +161,25 @@ class SimDancer{
 			case 'BACKWARD':
 				newFacing = normalized.mult(-1);
 				break;
-			case 'TARGET':
-				newFacing = this.calcTarget();
-				break;
 			default:
 				newFacing = normalized.copy();
 		}
 		return newFacing;
+	}
+
+	getNormalized(type){
+		let normalized;
+		switch(type){
+			case 'SELF':
+				normalized = createVector(this.history[0].x-this.history[1].x, this.history[0].y-this.history[1].y).normalize();
+				break;
+			case 'STAGE':
+				normalized = createVector(0,1).normalize()
+				break;
+			default:
+				normalized = createVector(this.targetPos.x- this.history[0].x, this.targetPos.y - this.history[0].y).normalize();
+		}
+		return normalized;
 	}
 
 	addPosition(pos){ 
@@ -165,9 +188,9 @@ class SimDancer{
 		this.history.unshift(pos);
 	}
 
-	updateCenter(x,y){
-		this.center = createVector(parseInt(x),parseInt(y));
-		console.log(this.center);
+	updateCenter(newCenter){
+		let newVector = createVector(parseFloat(newCenter.x),parseFloat(newCenter.y));
+		this.center = newCenter;
 	}
 
 	updateScale(w,h){
@@ -193,6 +216,11 @@ class SimDancer{
 	setTrace(trace){
 		this.dot.updateTrace(parseInt(trace));
 	}
+
+	setStopState(state){
+		this.stopped = state;
+		console.log(`dancer ${this.id} is ${state}`)
+	}
 }
 
 // seperate class
@@ -217,6 +245,7 @@ class LiveDancer{
 		let newPos = this.updatePosition();
 		let newFace = createVector(0,0); //supposedly can get from pozyx data?
 		this.dot.update({pos: newPos, facing: newFace});
+		this.dot.draw();
 
 		this.pos = newPos; 
 	}

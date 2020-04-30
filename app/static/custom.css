@@ -54,7 +54,7 @@ button {
   color: white;*/
 }
 
-#addDancer {
+#addDancer button{
   background-color: #f77816;
   color: white;
 }
@@ -64,7 +64,7 @@ button {
   color: white;
 }
 
-.pathways button {
+.pathwaysbtn label {
   background-color: #e32289;
   color: white;
 }
@@ -74,8 +74,8 @@ button {
   color: white;
 }
 
-.target-select {
-  width: 50%;
+.options {
+  margin-bottom: 25px;
 }
 
 .about {
